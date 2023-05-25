@@ -265,14 +265,19 @@ $ aws ec2 create-tags --resources rtb-0c0fadfad1bda183a --tags Key=Name,Value=pr
 
 ### Step 7 - Create routes 
 
-
+Attach the route table created for the public subnet to the internet gateway. The route matches all IPv4 traffic (0.0.0.0/0) and routes it to the specified Internet gateway.
+```
 $ aws ec2 create-route --route-table-id rtb-0cb37c83c5c185023 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-0bd36620eac2625ec{
     "Return": true
 }
-
+```
+Attach the route table created for the private subnet to the NAT gateway. The route matches all IPv4 traffic (0.0.0.0/0) and routes it to the specified NAT gateway.
+```
 $ aws ec2 create-route --route-table-id rtb-0c0fadfad1bda183a --destination-cidr-block 0.0.0.0/0 --gateway-id nat-0618c0e7b52dc0a32{
     "Return": true
 }
+```
+
 
 
 
