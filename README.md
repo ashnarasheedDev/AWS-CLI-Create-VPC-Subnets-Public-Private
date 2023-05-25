@@ -310,6 +310,22 @@ $ aws ec2 associate-route-table --route-table-id rtb-0c0fadfad1bda183a --subnet-
     }
 }
 ```
+###  Step 9 - Create a security group for the VPC 
 
+```
+$ aws ec2 create-security-group --group-name aws-sg  --description "An sg for traffic control" --vpc-id vpc-05f118ed4ba7b9cc2
+{
+    "GroupId": "sg-05dd2bee38394b8fb"
+}
+```
+><b>Add a tag to the SG</b>
+```
+$ aws ec2 create-tags --resources sg-05dd2bee38394b8fb --tags Key=Name,Value=aws-sg
+```
+><b>Specify rules for the security group</b>
+```
+$ aws ec2 authorize-security-group-ingress --group-id sg-05dd2bee38394b8fb --protocol tcp --port 22 --cidr 0.0.0.0/0
 
+$ aws ec2 authorize-security-group-ingress --group-id sg-05dd2bee38394b8fb --protocol tcp --port 80 --cidr 0.0.0.0/0
+```
 
