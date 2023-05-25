@@ -172,3 +172,39 @@ $ aws ec2 create-tags --resources igw-0bd36620eac2625ec --tags Key=Name,Value=ig
 $ aws ec2 attach-internet-gateway --internet-gateway-id igw-0bd36620eac2625ec --vpc-id vpc-05f118ed4ba7b9cc2
 ```
 
+### Step 4 - Create an elastic IP address for NAT gateway
+```
+$ aws ec2 allocate-address --domain vpc
+{
+    "PublicIp": "3.111.5.15",
+    "AllocationId": "eipalloc-0692e65c6d29bdd6a",
+    "PublicIpv4Pool": "amazon",
+    "NetworkBorderGroup": "ap-south-1",
+    "Domain": "vpc"
+}
+```
+###  Step 5 - Create a NAT gateway 
+
+NAT Gateway is a managed AWS service that allows instances in private subnets to access the internet while preventing inbound connections from the internet.
+```
+$ aws ec2 create-nat-gateway --subnet-id subnet-06f7ef739b0430039 --allocation-id eipalloc-0692e65c6d29bdd6a
+{
+    "ClientToken": "38d2064b-b0b3-45d1-b41b-751eb56eb996",
+    "NatGateway": {
+        "CreateTime": "2023-05-25T11:17:43.000Z",
+        "NatGatewayAddresses": [
+            {
+                "AllocationId": "eipalloc-0692e65c6d29bdd6a"
+            }
+        ],
+        "NatGatewayId": "nat-0618c0e7b52dc0a32",
+        "State": "pending",
+        "SubnetId": "subnet-06f7ef739b0430039",
+        "VpcId": "vpc-05f118ed4ba7b9cc2"
+    }
+}
+```
+<b>Add a tag to the NAT gw</b>
+```
+$ aws ec2 create-tags --resources nat-0618c0e7b52dc0a32 --tags Key=Name,Value=nat-gw
+```
