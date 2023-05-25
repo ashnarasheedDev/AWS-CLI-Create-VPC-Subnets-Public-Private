@@ -204,7 +204,76 @@ $ aws ec2 create-nat-gateway --subnet-id subnet-06f7ef739b0430039 --allocation-i
     }
 }
 ```
-<b>Add a tag to the NAT gw</b>
+><b>Add a tag to the NAT gw</b>
 ```
 $ aws ec2 create-tags --resources nat-0618c0e7b52dc0a32 --tags Key=Name,Value=nat-gw
 ```
+
+###  Step 6 - Create a route table for each subnet 
+><b>Create rtb 1</b>
+```
+$ aws ec2 create-route-table --vpc-id vpc-05f118ed4ba7b9cc2
+{
+    "RouteTable": {
+        "Associations": [],
+        "PropagatingVgws": [],
+        "RouteTableId": "rtb-0cb37c83c5c185023",
+        "Routes": [
+            {
+                "DestinationCidrBlock": "172.32.0.0/16",
+                "GatewayId": "local",
+                "Origin": "CreateRouteTable",
+                "State": "active"
+            }
+        ],
+        "Tags": [],
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213"
+    }
+}
+```
+><b>Add a tag to the public rtb</b>
+```
+$ aws ec2 create-tags --resources rtb-0cb37c83c5c185023 --tags Key=Name,Value=public
+```
+><b>Create rtb 2</b>
+```
+$ aws ec2 create-route-table --vpc-id vpc-05f118ed4ba7b9cc2
+{
+    "RouteTable": {
+        "Associations": [],
+        "PropagatingVgws": [],
+        "RouteTableId": "rtb-0c0fadfad1bda183a",
+        "Routes": [
+            {
+                "DestinationCidrBlock": "172.32.0.0/16",
+                "GatewayId": "local",
+                "Origin": "CreateRouteTable",
+                "State": "active"
+            }
+        ],
+        "Tags": [],
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213"
+    }
+}
+```
+><b>Add a tag to private rtb</b>
+```
+$ aws ec2 create-tags --resources rtb-0c0fadfad1bda183a --tags Key=Name,Value=private
+```
+
+### Step 7 - Create routes 
+
+
+$ aws ec2 create-route --route-table-id rtb-0cb37c83c5c185023 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-0bd36620eac2625ec{
+    "Return": true
+}
+
+$ aws ec2 create-route --route-table-id rtb-0c0fadfad1bda183a --destination-cidr-block 0.0.0.0/0 --gateway-id nat-0618c0e7b52dc0a32{
+    "Return": true
+}
+
+
+
+
