@@ -277,8 +277,39 @@ $ aws ec2 create-route --route-table-id rtb-0c0fadfad1bda183a --destination-cidr
     "Return": true
 }
 ```
+### Step 8 - Associate route table to subnets
+><b>Associate the public route table to the public subnet1</b>
+```
+$ aws ec2 associate-route-table --route-table-id rtb-0cb37c83c5c185023 --subnet-id subnet-0bdeb0a332f629cd5
+{
+    "AssociationId": "rtbassoc-07ae4f7434bb6d0f8",
+    "AssociationState": {
+        "State": "associated"
+    }
+}
+```
+><b>Associate the public route table to the public subnet2</b>
 
+```
+$ aws ec2 associate-route-table --route-table-id rtb-0cb37c83c5c185023 --subnet-id subnet-06f7ef739b0430039
+{
+    "AssociationId": "rtbassoc-0671f3b6f44450b71",
+    "AssociationState": {
+        "State": "associated"
+    }
+}
+```
+><b>Associate the private route table to the private subnet</b>
 
+```
+$ aws ec2 associate-route-table --route-table-id rtb-0c0fadfad1bda183a --subnet-id subnet-041589df7acf7d39e
+{
+    "AssociationId": "rtbassoc-0ea100022bebf2ef2",
+    "AssociationState": {
+        "State": "associated"
+    }
+}
+```
 
 
 
