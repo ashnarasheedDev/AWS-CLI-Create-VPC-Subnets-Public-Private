@@ -24,7 +24,125 @@ i'm going to create a VPC, subnets, route tables, security groups, keypair and i
    - Create Key-pair
    - Run an instance
 
+### Prerequisites
 
-**Let us get in to the step by step method**
+1. An AWS account.
+2. Configure AWS CLI using an IAM user with programmatic access.
 
+**You’re good to go. Now, let’s get started!**
 
+### Step 1 — Create a VPC 
+
+This command creates a VPC with the CIDR block range of 172.32.0.0/16. The CIDR block determines the IP address range that will be available for your VPC.
+
+After executing the command, you will receive a JSON output containing information about the created VPC, including its VPC ID, CIDR block range, and other attributes.
+```
+$ aws ec2 create-vpc --cidr-block 172.32.0.0/16
+
+{
+    "Vpc": {
+        "CidrBlock": "172.32.0.0/16",
+        "DhcpOptionsId": "dopt-03970761f5ca105a9",
+        "State": "pending",
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213",
+        "InstanceTenancy": "default",
+        "Ipv6CidrBlockAssociationSet": [],
+        "CidrBlockAssociationSet": [
+            {
+                "AssociationId": "vpc-cidr-assoc-00c7985d48e395bb7",
+                "CidrBlock": "172.32.0.0/16",
+                "CidrBlockState": {
+                    "State": "associated"
+                }
+            }
+        ],
+        "IsDefault": false
+    }
+}
+```
+> <b>Add a name tag for VPC</b>
+```
+$ aws ec2 create-tags --resources vpc-05f118ed4ba7b9cc2 --tags Key=Name,Value=my_vpc
+```
+
+### Step 2 - Create public and private subnets 
+
+><b> Create public subnet 1</b>
+```
+aws ec2 create-subnet --vpc-id vpc-05f118ed4ba7b9cc2 --cidr-block 172.32.0.0/18 --availability-zone ap-south-1a
+{
+    "Subnet": {
+        "AvailabilityZone": "ap-south-1a",
+        "AvailabilityZoneId": "aps1-az1",
+        "AvailableIpAddressCount": 16379,
+        "CidrBlock": "172.32.0.0/18",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false,
+        "State": "available",
+        "SubnetId": "subnet-06f7ef739b0430039",
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:ap-south-1:175601052213:subnet/subnet-06f7ef739b0430039"
+    }
+}
+```
+> <b> Add a tag to the subnet</b>
+```
+$  aws ec2 create-tags --resources subnet-06f7ef739b0430039 --tags Key=Name,Value=Subnet1
+```
+> <b>Create public subnet 2</b>
+```
+$ aws ec2 create-subnet --vpc-id vpc-05f118ed4ba7b9cc2 --cidr-block 172.32.64.0/18 --availability-zone ap-south-1b
+{
+    "Subnet": {
+        "AvailabilityZone": "ap-south-1b",
+        "AvailabilityZoneId": "aps1-az3",
+        "AvailableIpAddressCount": 16379,
+        "CidrBlock": "172.32.64.0/18",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false,
+        "State": "available",
+        "SubnetId": "subnet-0bdeb0a332f629cd5",
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:ap-south-1:175601052213:subnet/subnet-0bdeb0a332f629cd5"
+    }
+}
+```
+> <b>Add a tag to the subnet</b>
+```
+$ aws ec2 create-tags --resources subnet-0bdeb0a332f629cd5 --tags Key=Name,Value=Subnet2
+```
+> <b> Create a private subnet</b>
+```
+$ aws ec2 create-subnet --vpc-id vpc-05f118ed4ba7b9cc2 --cidr-block 172.32.128.0/18 --availability-zone ap-south-1b
+{
+    "Subnet": {
+        "AvailabilityZone": "ap-south-1b",
+        "AvailabilityZoneId": "aps1-az3",
+        "AvailableIpAddressCount": 16379,
+        "CidrBlock": "172.32.128.0/18",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false,
+        "State": "available",
+        "SubnetId": "subnet-041589df7acf7d39e",
+        "VpcId": "vpc-05f118ed4ba7b9cc2",
+        "OwnerId": "175601052213",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:ap-south-1:175601052213:subnet/subnet-041589df7acf7d39e"
+    }
+}
+```
+> <b> Add a tag to subnet</b>
+```
+$ aws ec2 create-tags --resources subnet-041589df7acf7d39e --tags Key=Name,Value=Subnet3
+```
+
+$ aws ec2 modify-subnet-attribute --subnet-id subnet-0bdeb0a332f629cd5 --map-public-ip-on-launch
+$ aws ec2 modify-subnet-attribute --subnet-id subnet-06f7ef739b0430039 --map-public-ip-on-launch
