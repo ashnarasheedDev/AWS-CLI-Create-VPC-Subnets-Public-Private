@@ -1,6 +1,9 @@
 # AWS-CLI-Create-VPC-Subnets-Route-tables-Security_groups-Instance
+
 Setting up a VPC (Virtual Private Cloud) interface using AWS CLI (Command Line Interface) is a straightforward process. The AWS CLI provides a command-line interface to interact with various AWS services, including VPC. Here's an overview of how you can set up a VPC interface using AWS CLI.
 i'm going to create a VPC, subnets, route tables, security groups, keypair and instance.
+
+The choice between AWS CLI and Terraform depends on your preference, the complexity of your infrastructure, and your team's expertise. If you prefer scripting and want fine-grained control, AWS CLI might be suitable. If you prefer a declarative and infrastructure-agnostic approach, Terraform can be a good choice. Some organizations even use a combination of both.
 
 
 ### Features of AWS CLI
@@ -328,4 +331,137 @@ $ aws ec2 authorize-security-group-ingress --group-id sg-05dd2bee38394b8fb --pro
 
 $ aws ec2 authorize-security-group-ingress --group-id sg-05dd2bee38394b8fb --protocol tcp --port 80 --cidr 0.0.0.0/0
 ```
+
+### Step 10 - Create Key-pair
+```
+$ aws ec2 create-key-pair --key-name aws-keyPair --query 'KeyMaterial' --output text > aws-keyPair.pem
+```
+
+### Step 11 - Create an instance
+
+```
+$ aws ec2 run-instances --image-id ami-0c768662cc797cd75 --instance-type t2.micro --count 1 --subnet-id subnet-06f7ef739b0430039 --security-group-ids sg-05dd2bee38394b8fb --associate-public-ip-address --key-name aws-keyPair
+{
+    "Groups": [],
+    "Instances": [
+        {
+            "AmiLaunchIndex": 0,
+            "ImageId": "ami-0c768662cc797cd75",
+            "InstanceId": "i-0d7516225b5ac71af",
+            "InstanceType": "t2.micro",
+            "KeyName": "aws-keyPair",
+            "LaunchTime": "2023-05-25T11:40:42.000Z",
+            "Monitoring": {
+                "State": "disabled"
+            },
+            "Placement": {
+                "AvailabilityZone": "ap-south-1a",
+                "GroupName": "",
+                "Tenancy": "default"
+            },
+            "PrivateDnsName": "ip-172-32-61-20.ap-south-1.compute.internal",
+            "PrivateIpAddress": "172.32.61.20",
+            "ProductCodes": [],
+            "PublicDnsName": "",
+            "State": {
+                "Code": 0,
+                "Name": "pending"
+            },
+            "StateTransitionReason": "",
+            "SubnetId": "subnet-06f7ef739b0430039",
+            "VpcId": "vpc-05f118ed4ba7b9cc2",
+            "Architecture": "x86_64",
+            "BlockDeviceMappings": [],
+            "ClientToken": "cccf80ba-d4df-45a8-ae26-74ef7151c69e",
+            "EbsOptimized": false,
+            "EnaSupport": true,
+            "Hypervisor": "xen",
+            "NetworkInterfaces": [
+                {
+                    "Attachment": {
+                        "AttachTime": "2023-05-25T11:40:42.000Z",
+                        "AttachmentId": "eni-attach-0e5ec4fb6b4afc9ba",
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "Status": "attaching"
+                    },
+                    "Description": "",
+                    "Groups": [
+                        {
+                            "GroupName": "aws-sg",
+                            "GroupId": "sg-05dd2bee38394b8fb"
+                        }
+                    ],
+                    "Ipv6Addresses": [],
+                    "MacAddress": "02:ae:53:dd:76:d0",
+                    "NetworkInterfaceId": "eni-07f1ac538e6da57c1",
+                    "OwnerId": "175601052213",
+                    "PrivateIpAddress": "172.32.61.20",
+                    "PrivateIpAddresses": [
+                        {
+                            "Primary": true,
+                            "PrivateIpAddress": "172.32.61.20"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "Status": "in-use",
+                    "SubnetId": "subnet-06f7ef739b0430039",
+                    "VpcId": "vpc-05f118ed4ba7b9cc2",
+                    "InterfaceType": "interface"
+                }
+            ],
+            "RootDeviceName": "/dev/xvda",
+            "RootDeviceType": "ebs",
+            "SecurityGroups": [
+                {
+                    "GroupName": "aws-sg",
+                    "GroupId": "sg-05dd2bee38394b8fb"
+                }
+            ],
+            "SourceDestCheck": true,
+            "StateReason": {
+                "Code": "pending",
+                "Message": "pending"
+            },
+            "VirtualizationType": "hvm",
+            "CpuOptions": {
+                "CoreCount": 1,
+                "ThreadsPerCore": 1
+            },
+            "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "open"
+            },
+            "MetadataOptions": {
+                "State": "pending",
+                "HttpTokens": "required",
+                "HttpPutResponseHopLimit": 2,
+                "HttpEndpoint": "enabled"
+            }
+        }
+    ],
+    "OwnerId": "175601052213",
+    "ReservationId": "r-0d2d8dbd60b0e4857"
+}
+```
+><b>Add a tag to the instance</b>
+```
+$ aws ec2 create-tags --resources i-0d7516225b5ac71af --tags Key=Name,Value=webserver
+```
+><b>Enable the DNS hostname for the VPC</b>
+
+```
+$ aws ec2 modify-vpc-attribute --vpc-id vpc-05f118ed4ba7b9cc2 --enable-dns-hostnames
+```
+><b>Print Public DNS name</b>
+
+```
+$ aws ec2 describe-instances --instance-ids i-0d7516225b5ac71af --query 'Reservations[].Instances[].PublicDnsName'
+[
+    "ec2-13-234-202-221.ap-south-1.compute.amazonaws.com"
+]
+```
+
+As for comparing AWS CLI and Terraform, they serve different purposes. AWS CLI is a command-line tool provided by AWS for managing AWS resources directly through commands. It provides more flexibility but requires manual scripting and maintenance.
+
+On the other hand, Terraform is an infrastructure as code (IaC) tool that allows you to define and manage your infrastructure using declarative configuration files. Terraform provides a higher-level abstraction and automates the creation and management of resources across multiple cloud providers, including AWS. It offers versioning, state management, and can be used for orchestration.
 
