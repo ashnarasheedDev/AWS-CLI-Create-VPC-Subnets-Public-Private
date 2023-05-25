@@ -143,6 +143,32 @@ $ aws ec2 create-subnet --vpc-id vpc-05f118ed4ba7b9cc2 --cidr-block 172.32.128.0
 ```
 $ aws ec2 create-tags --resources subnet-041589df7acf7d39e --tags Key=Name,Value=Subnet3
 ```
-
+> <b>Enable "Auto-assign Public IP" for two public subnets</b>
+```
 $ aws ec2 modify-subnet-attribute --subnet-id subnet-0bdeb0a332f629cd5 --map-public-ip-on-launch
 $ aws ec2 modify-subnet-attribute --subnet-id subnet-06f7ef739b0430039 --map-public-ip-on-launch
+```
+### Step 3 - Create internet gateway for the VPC 
+
+Internet gateway (IGW) is simply used to connect a VPC to the internet so that the VPC resources can access the internet and be accessed over the internet.
+
+```
+$ aws ec2 create-internet-gateway
+{
+    "InternetGateway": {
+        "Attachments": [],
+        "InternetGatewayId": "igw-0bd36620eac2625ec",
+        "OwnerId": "175601052213",
+        "Tags": []
+    }
+}
+```
+> <b>Add a tag </b>
+```
+$ aws ec2 create-tags --resources igw-0bd36620eac2625ec --tags Key=Name,Value=igw
+```
+><b>Attach igw to VPC</b>
+```
+$ aws ec2 attach-internet-gateway --internet-gateway-id igw-0bd36620eac2625ec --vpc-id vpc-05f118ed4ba7b9cc2
+```
+
